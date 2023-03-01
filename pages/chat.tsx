@@ -1,10 +1,15 @@
-import { useState, useEffect, useRef, MouseEvent } from "react";
+import { useState, useEffect, useRef, MouseEvent, FormEvent } from "react";
 import io, { Socket } from "socket.io-client";
+import { GetServerSideProps } from "next";
+import { getSession } from "next-auth/react";
+
 import {
   IMessage,
   ClientToServerEvents,
   ServerToClientEvents,
 } from "@/types/Messages";
+
+import UsernameForm from "@/components/chat/UsernameForm";
 
 import styles from "./chat.module.css";
 
@@ -13,15 +18,20 @@ let socket: undefined | Socket;
 const Chat = () => {
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [msgIsValid, setMsgIsValid] = useState(true);
+  const [username, setUsername] = useState<string>("");
+
+  const usernameInputRef = useRef<HTMLInputElement>(null);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-      socketInitializer();
-
+    socketInitializer();
   }, []);
 
   const socketInitializer = async () => {
+    if (socket) {
+      return;
+    }
     fetch("/api/socket");
     socket = io();
 
@@ -56,16 +66,38 @@ const Chat = () => {
       setMsgIsValid(false);
     } else {
       const msg: IMessage = {
-        username: "kjartan",
+        username: username,
         message: inputRef.current.value,
       };
 
       if (socket !== undefined) {
         socket.emit("getMsg", msg);
         setMsgIsValid(true);
+        setMessages((prevMessages) => [...prevMessages, msg]);
       }
     }
   };
+
+  const usernameButtonHandler = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (
+      usernameInputRef.current?.value == null ||
+      usernameInputRef.current?.value === ""
+    ) {
+      alert(`Username is incorrect`);
+    } else {
+      setUsername(usernameInputRef.current.value);
+    }
+  };
+
+  if (username === "") {
+    return (
+      <UsernameForm
+        UsernameInputRef={usernameInputRef}
+        usernameButtonHandler={usernameButtonHandler}
+      />
+    );
+  }
 
   return (
     <div>
@@ -89,6 +121,23 @@ const Chat = () => {
       </div>
     </div>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const session = await getSession({ req: context.req });
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: { session },
+  };
 };
 
 export default Chat;

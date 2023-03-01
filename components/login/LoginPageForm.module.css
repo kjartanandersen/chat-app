@@ -1,0 +1,43 @@
+.form {
+  padding: 1rem;
+  margin: 15rem auto;
+  text-align: center;
+  width: 30vw;
+  color: white;
+  background-color: rgb(130, 64, 152);
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+}
+
+
+.formItems {
+  color: white;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.control {
+  margin-right: 1rem;
+  display: block;
+}
+
+
+.buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.formBtn {
+  cursor: pointer;
+  font: inherit;
+  background-color: rgb(151, 105, 151);
+  color: white;
+  border: 1px solid rgb(151, 105, 151);
+  border-radius: 4px;
+}
+
+.formBtn:hover {
+  background-color: rgb(147, 111, 159);
+  border-color: rgb(147, 111, 159);
+}
