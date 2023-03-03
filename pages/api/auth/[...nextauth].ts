@@ -1,6 +1,7 @@
 import { verifyPassword } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/db";
 import NextAuth from "next-auth/next";
+import { type User } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
 export default NextAuth({
@@ -11,7 +12,7 @@ export default NextAuth({
   providers: [
     CredentialsProvider({
       credentials: {
-        username: { label: "Username", type: "text", placeholder: "jsmith" },
+        username: { label: "Username", type: "text" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
@@ -41,12 +42,42 @@ export default NextAuth({
           throw new Error("Invalid Password!");
         }
 
-        const username: any = { username: credentials.username };
-
         client.close();
 
-        return username;
+        const sessionUser: User = { username: credentials.username };
+
+        return sessionUser;
       },
     }),
   ],
+  callbacks: {
+    async session({ session, token, user }) {
+      // console.log({ message: "Session", session });
+      // console.log({ message: "Token", token });
+      // console.log({ message: "User", user });
+      // if (session.user) {
+      //   session.user.username = token.username;
+      // }
+
+      if (session.user) {
+        const {sub, iat, exp, jti, ...rest} = token;
+
+        session.user = rest;
+      }
+      return session;
+    },
+    async jwt({ token, account, user, profile }) {
+      if (user) {
+        const u = user as User;
+
+        token.username = u.username;
+        console.log({message: "u as User", u});
+
+
+      }
+
+
+      return token;
+    },
+  },
 });

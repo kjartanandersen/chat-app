@@ -1,7 +1,7 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 
-import { signIn, getSession } from "next-auth/react";
+import { signIn, getSession, useSession } from "next-auth/react";
 
 import styles from "./LoginPageForm.module.css";
 
@@ -16,7 +16,6 @@ const LoginPageForm = () => {
     usernameRef.current?.focus();
     getSession().then((session) => {
       if (session) {
-        // console.log(session.user.username)
         router.replace("/chat");
       }
     });
@@ -43,10 +42,8 @@ const LoginPageForm = () => {
   const loginSubmitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    console.log(usernameRef.current?.value);
-
-    const username = usernameRef.current?.value;
-    const password = passwordRef.current?.value;
+    const username = usernameRef.current.value;
+    const password = passwordRef.current.value;
 
     if (isLogin) {
       // log user in

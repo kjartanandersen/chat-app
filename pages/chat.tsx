@@ -1,31 +1,32 @@
 import { useState, useEffect, useRef, MouseEvent, FormEvent } from "react";
 import io, { Socket } from "socket.io-client";
 import { GetServerSideProps } from "next";
-import { getSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
+import { Session } from "next-auth";
 
 import {
   IMessage,
-  ClientToServerEvents,
-  ServerToClientEvents,
 } from "@/types/Messages";
 
-import UsernameForm from "@/components/chat/UsernameForm";
-
 import styles from "./chat.module.css";
+import { useRouter } from "next/router";
 
 let socket: undefined | Socket;
 
 const Chat = () => {
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [msgIsValid, setMsgIsValid] = useState(true);
-  const [username, setUsername] = useState<string>("");
 
   const usernameInputRef = useRef<HTMLInputElement>(null);
-
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const {data: session, status} = useSession();
+
+  const router = useRouter();
 
   useEffect(() => {
     socketInitializer();
+    inputRef.current?.focus();
   }, []);
 
   const socketInitializer = async () => {
@@ -56,21 +57,23 @@ const Chat = () => {
   //   setMessages((prevMsg) => [...prevMsg, msg]);
   // });
 
-  const buttonClickHandler = (e: MouseEvent<HTMLButtonElement>) => {
+  const sendMessageHandler = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    console.log(session?.user.username)
 
     if (
       inputRef.current?.value === undefined ||
-      inputRef.current.value === ""
+      inputRef.current.value === "" ||
+      !session
     ) {
       setMsgIsValid(false);
     } else {
       const msg: IMessage = {
-        username: username,
+        username: session.user.username,
         message: inputRef.current.value,
       };
 
-      if (socket !== undefined) {
+      if (socket !== undefined && session.user.username) {
         socket.emit("getMsg", msg);
         setMsgIsValid(true);
         setMessages((prevMessages) => [...prevMessages, msg]);
@@ -85,18 +88,11 @@ const Chat = () => {
       usernameInputRef.current?.value === ""
     ) {
       alert(`Username is incorrect`);
-    } else {
-      setUsername(usernameInputRef.current.value);
     }
   };
 
-  if (username === "") {
-    return (
-      <UsernameForm
-        UsernameInputRef={usernameInputRef}
-        usernameButtonHandler={usernameButtonHandler}
-      />
-    );
+  if (!session) {
+    router.replace("/");
   }
 
   return (
@@ -110,21 +106,22 @@ const Chat = () => {
           </li>
         ))}
       </ul>
-      <div className={styles.chat_input}>
+      <form className={styles.chat_input} onSubmit={sendMessageHandler}>
         <input ref={inputRef} type="text" />
         <button
           className={msgIsValid ? styles.btnInvalid : ""}
-          onClick={buttonClickHandler}
+
         >
           Send Message
         </button>
-      </div>
+      </form>
     </div>
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const session = await getSession({ req: context.req });
+export const getServerSideProps: GetServerSideProps<{session: Session | null}> = async (context) => {
+  const session = await getSession(context);
+
 
   if (!session) {
     return {
@@ -134,6 +131,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       },
     };
   }
+  console.log(session.user.username)
 
   return {
     props: { session },
