@@ -14,12 +14,8 @@ const LoginPageForm = () => {
 
   useEffect(() => {
     usernameRef.current?.focus();
-    getSession().then((session) => {
-      if (session) {
-        router.replace("/chat");
-      }
-    });
-  }, [usernameRef, router]);
+
+  }, [usernameRef]);
 
   async function createUser(username: string, password: string) {
     const response = await fetch("/api/auth/signup", {
@@ -62,7 +58,6 @@ const LoginPageForm = () => {
         if (username && password) {
           const response = await createUser(username, password);
 
-          console.log(response);
         }
       } catch (error) {
         console.log(error);

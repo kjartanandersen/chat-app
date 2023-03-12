@@ -1,25 +1,21 @@
+import { Fragment } from "react";
 import Head from "next/head";
 import Image from "next/image";
 import { Inter } from "@next/font/google";
-import styles from "@/styles/Home.module.css";
 
+
+import styles from "@/styles/Home.module.css";
 import LoginPage from "@/components/login/LoginPage";
-import { useState } from "react";
+import Layout from "@/components/layout/Layout";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  if (!isLoggedIn) {
-    return <LoginPage />;
-  }
-
   return (
-    <div>
-      <p>Hello</p>
-    </div>
-  );
+    <Layout>
+      <LoginPage />
+    </Layout>
+  )
 }
 
 /*

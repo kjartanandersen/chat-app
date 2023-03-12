@@ -4,30 +4,45 @@ import { GetServerSideProps } from "next";
 import { getSession, useSession } from "next-auth/react";
 import { Session } from "next-auth";
 
-import {
-  IMessage,
-} from "@/types/Messages";
+import { IMessage } from "@/types/Messages";
 
 import styles from "./chat.module.css";
 import { useRouter } from "next/router";
+import Layout from "@/components/layout/Layout";
+import { WithId } from "mongodb";
+import DialougeItem from "@/components/chat/DialougeItem";
 
 let socket: undefined | Socket;
 
+interface INewMessage {
+  id: string;
+  username: string;
+  message: string;
+}
+
 const Chat = () => {
-  const [messages, setMessages] = useState<IMessage[]>([]);
+  const [initMessages, setInitMessages] = useState<WithId<IMessage>[]>(null);
+  const [msgHasInit, setMsgHasInit] = useState<boolean>(false);
+  const [messages, setMessages] = useState<INewMessage[]>([]);
   const [msgIsValid, setMsgIsValid] = useState(true);
 
-  const usernameInputRef = useRef<HTMLInputElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const {data: session, status} = useSession();
+  const { data: session, status } = useSession();
 
   const router = useRouter();
 
   useEffect(() => {
     socketInitializer();
+    if (!msgHasInit) {
+      fetch("/api/initmessages")
+        .then((response) => response.json())
+        .then((data) => {
+          setInitMessages(data);
+        });
+    }
     inputRef.current?.focus();
-  }, []);
+  }, [msgHasInit]);
 
   const socketInitializer = async () => {
     if (socket) {
@@ -40,26 +55,13 @@ const Chat = () => {
       console.log("connected");
     });
 
-    socket.on("sendMsg", (msg: IMessage) => {
+    socket.on("sendMsg", (msg: INewMessage) => {
       setMessages((prevMsg) => [...prevMsg, msg]);
     });
   };
 
-  // socket.on("connect", () => {
-  //   setIsConnected(true);
-  // });
-
-  // socket.on("disconnect", () => {
-  //   setIsConnected(false);
-  // });
-
-  // socket.on("sendMsg", (msg: IMessage) => {
-  //   setMessages((prevMsg) => [...prevMsg, msg]);
-  // });
-
   const sendMessageHandler = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(session?.user.username)
 
     if (
       inputRef.current?.value === undefined ||
@@ -68,26 +70,23 @@ const Chat = () => {
     ) {
       setMsgIsValid(false);
     } else {
-      const msg: IMessage = {
+      const msg: INewMessage = {
+        id: new Date().toISOString(),
+        username: session.user.username,
+        message: inputRef.current.value,
+      };
+
+      const msgToSend: IMessage = {
         username: session.user.username,
         message: inputRef.current.value,
       };
 
       if (socket !== undefined && session.user.username) {
-        socket.emit("getMsg", msg);
+        socket.emit("getMsg", msgToSend);
         setMsgIsValid(true);
         setMessages((prevMessages) => [...prevMessages, msg]);
+        inputRef.current.value = "";
       }
-    }
-  };
-
-  const usernameButtonHandler = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (
-      usernameInputRef.current?.value == null ||
-      usernameInputRef.current?.value === ""
-    ) {
-      alert(`Username is incorrect`);
     }
   };
 
@@ -96,32 +95,54 @@ const Chat = () => {
   }
 
   return (
-    <div>
-      <ul className={styles.chat_window}>
-        {messages.map((msg) => (
-          <li key={msg.message}>
-            <p>
-              {msg.username}: {msg.message}
-            </p>
-          </li>
-        ))}
-      </ul>
-      <form className={styles.chat_input} onSubmit={sendMessageHandler}>
-        <input ref={inputRef} type="text" />
-        <button
-          className={msgIsValid ? styles.btnInvalid : ""}
+    <Layout>
+      {!initMessages && <p>Loading...</p>}
+      {initMessages && (
+        <div className={styles.chat}>
+          <ul>
+            {initMessages.length > 0 &&
+              initMessages.map((msg) => (
+                <li
+                  className={styles.litem + " container"}
+                  key={msg._id.toString()}
+                >
+                  <DialougeItem message={msg.message} username={msg.username} />
+                </li>
+              ))}
 
-        >
-          Send Message
-        </button>
-      </form>
-    </div>
+            {messages.length > 0 &&
+              messages.map((msg) => (
+                <li className={styles.litem + " container"} key={msg.id}>
+                  <DialougeItem message={msg.message} username={msg.username} />
+                </li>
+              ))}
+          </ul>
+
+              <div className="container">
+          <form
+            className={"field "}
+            onSubmit={sendMessageHandler}
+          >
+            <input
+              className="input"
+              ref={inputRef}
+              type="text"
+              placeholder="Enter text here"
+            />
+            <button className="btn">Send</button>
+          </form>
+
+              </div>
+        </div>
+      )}
+    </Layout>
   );
 };
 
-export const getServerSideProps: GetServerSideProps<{session: Session | null}> = async (context) => {
+export const getServerSideProps: GetServerSideProps<{
+  session: Session | null;
+}> = async (context) => {
   const session = await getSession(context);
-
 
   if (!session) {
     return {
@@ -131,7 +152,7 @@ export const getServerSideProps: GetServerSideProps<{session: Session | null}> =
       },
     };
   }
-  console.log(session.user.username)
+  console.log(session.user.username);
 
   return {
     props: { session },

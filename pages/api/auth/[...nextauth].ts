@@ -1,10 +1,10 @@
 import { verifyPassword } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/db";
 import NextAuth from "next-auth/next";
-import { type User } from "next-auth";
+import { AuthOptions, type User } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
-export default NextAuth({
+export const authOptions: AuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: "jwt",
@@ -19,7 +19,7 @@ export default NextAuth({
         if (!credentials) {
           return null;
         }
-        const client = await connectToDatabase();
+        const client = await connectToDatabase("chat-app");
 
         const usersCollection = client.db().collection("users");
 
@@ -60,7 +60,7 @@ export default NextAuth({
       // }
 
       if (session.user) {
-        const {sub, iat, exp, jti, ...rest} = token;
+        const { sub, iat, exp, jti, ...rest } = token;
 
         session.user = rest;
       }
@@ -71,13 +71,11 @@ export default NextAuth({
         const u = user as User;
 
         token.username = u.username;
-        console.log({message: "u as User", u});
-
-
       }
-
 
       return token;
     },
   },
-});
+};
+
+export default NextAuth(authOptions)

@@ -1,11 +1,17 @@
+/* Tailwind */
+/* @tailwind base;
+@tailwind components;
+@tailwind utilities; */
+
 @import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
 
 * {
-  font-family: "Roboto", sans-serif;
+  /* font-family: "Roboto", sans-serif;
+  list-style: none; */
 }
 
 body {
-  background-color: rgb(24, 36, 94);
+  background-color: rgb(81, 107, 253);
 }
 /*:root {
   --max-width: 1100px;

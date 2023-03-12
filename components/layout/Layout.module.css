@@ -1,0 +1,21 @@
+.layout {
+  width: 100%;
+  margin-bottom: 100px;
+  padding: 10px;
+  background-color: rgb(205, 179, 179);
+  border-bottom: 1px solid rgb(156, 88, 88);
+}
+
+.signBtn {
+  background-color: rgb(80, 80, 161);
+  color: white;
+  border: 0;
+  border-radius: 15px;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.signBtn:hover {
+  background-color: rgb(68, 68, 175);
+}
+

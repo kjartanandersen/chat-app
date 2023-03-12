@@ -20,7 +20,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       return;
     }
 
-    const client = await connectToDatabase();
+    const client = await connectToDatabase("chat-app");
 
     const db = client.db();
 
