@@ -16,13 +16,26 @@ const Layout = (props: ILayoutProps) => {
   };
 
   return (
-    <div>
-      <div className={styles.layout}>
-        <div>
-          {session && <button className={styles.signBtn} onClick={btnSignOutHandler}>Sign Out</button>}
+    <div className={styles.page}>
+      <header>
+        <nav>
+          <div className={styles.layout}>
+            <div>
+              {session && (
+                <button className={styles.signBtn} onClick={btnSignOutHandler}>
+                  Sign Out
+                </button>
+              )}
+            </div>
+          </div>
+        </nav>
+      </header>
+      <main>{props.children}</main>
+      <footer>
+        <div className={styles.layoutFooter}>
+          <p>By Kjartan Mar Andersen</p>
         </div>
-      </div>
-      {props.children}
+      </footer>
     </div>
   );
 };

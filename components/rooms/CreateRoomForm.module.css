@@ -1,0 +1,46 @@
+.createRoomForm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  background-color: coral;
+  padding: 1.5rem;
+  border-radius: 15px;
+}
+
+.createRoomForm > label {
+  width: 400px;
+}
+
+.createRoomForm > input {
+  font-family: inherit;
+  padding-top: 1rem;
+  font-size: 3rem;
+  width: 400px;
+  height: 30px;
+  border: 0;
+  border-radius: 15px;
+}
+
+.createRoomForm > input::placeholder {
+  color: rgb(80, 80, 80);
+}
+
+.createRoomForm > div {
+  width: 400px;
+}
+
+.createRoomForm > div > button {
+  height: 30px;
+  border: 0;
+  border-radius: 15px;
+  background-color: blue;
+  color: white;
+  font-family: inherit;
+  font-size: 2rem;
+}
+
+.createRoomForm > div > button:hover {
+  cursor: pointer;
+  background-color: rgb(87, 87, 197);
+}

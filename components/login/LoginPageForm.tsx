@@ -9,6 +9,7 @@ const LoginPageForm = () => {
   const usernameRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const [isLogin, setIsLogin] = useState<boolean>(true);
+  const [error, setError] = useState<boolean>(false);
 
   const router = useRouter();
 
@@ -30,6 +31,9 @@ const LoginPageForm = () => {
 
     if (!response) {
       throw new Error(data.message || "Something went wrong!");
+    }
+    if (response.status === 422) {
+      setError(true);
     }
 
     return data;
@@ -72,6 +76,7 @@ const LoginPageForm = () => {
   return (
     <section className={styles.form}>
       <h1>{isLogin ? "Login" : "Sign Up"}</h1>
+      {error && <p>Error</p>}
       <form onSubmit={loginSubmitHandler} className={styles.formItems}>
         <div>
           <label htmlFor="username" className={styles.control}>

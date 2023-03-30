@@ -11,6 +11,7 @@ import { useRouter } from "next/router";
 import Layout from "@/components/layout/Layout";
 import { WithId } from "mongodb";
 import DialougeItem from "@/components/chat/DialougeItem";
+import DialogueForm from "@/components/chat/DialogueForm";
 
 let socket: undefined | Socket;
 
@@ -118,21 +119,10 @@ const Chat = () => {
               ))}
           </ul>
 
-              <div className="container">
-          <form
-            className={"field "}
-            onSubmit={sendMessageHandler}
-          >
-            <input
-              className="input"
-              ref={inputRef}
-              type="text"
-              placeholder="Enter text here"
-            />
-            <button className="btn">Send</button>
-          </form>
-
-              </div>
+          <DialogueForm
+            inputRef={inputRef}
+            sendMessageHandler={sendMessageHandler}
+          />
         </div>
       )}
     </Layout>
