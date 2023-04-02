@@ -12,7 +12,7 @@ const LoginPage = () => {
   useEffect(() => {
     getSession().then((session) => {
       if (session) {
-        router.replace("/chat");
+        router.replace("/rooms");
       } else {
         setIsLoading(false);
       }

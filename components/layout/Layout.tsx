@@ -20,20 +20,18 @@ const Layout = (props: ILayoutProps) => {
       <header>
         <nav>
           <div className={styles.layout}>
-            <div>
-              {session && (
-                <button className={styles.signBtn} onClick={btnSignOutHandler}>
-                  Sign Out
-                </button>
-              )}
-            </div>
+            {session && (
+              <button className={styles.signBtn} onClick={btnSignOutHandler}>
+                Sign Out
+              </button>
+            )}
           </div>
         </nav>
       </header>
       <main>{props.children}</main>
       <footer>
         <div className={styles.layoutFooter}>
-          <p>By Kjartan Mar Andersen</p>
+          <p>By Kjartan Már Andersen</p>
         </div>
       </footer>
     </div>

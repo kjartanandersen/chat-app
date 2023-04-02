@@ -1,3 +1,25 @@
 .roomListItem {
+  background-color: rgb(0, 26, 255);
+  border-radius: 15px;
+  font-family: sans-serif;
+  line-height: normal;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  width: 400px;
+  vertical-align: middle;
+}
+
+.roomListItemBtn {
+  width: 100px;
+  height: 30px;
+  border: 0px;
+  background-color: orange;
+  border-radius: 15px;
+}
+
+.roomListItemBtn:hover {
+  cursor: pointer;
+  background-color: rgb(228, 188, 112);
 
 }

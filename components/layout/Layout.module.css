@@ -8,9 +8,10 @@
 }
 
 .layout {
-  width: 100%;
+  position: relative;
+  width: calc(100% - 40px);
   margin-bottom: 100px;
-  padding: 10px;
+  padding: 10px 20px;
   background-color: rgb(205, 179, 179);
   border-bottom: 1px solid rgb(156, 88, 88);
 }
@@ -22,7 +23,6 @@
   color: white;
   border: 0;
   border-radius: 0px;
-  /* padding: 10px; */
   cursor: pointer;
   height: 50px;
   width: 100px;
@@ -33,12 +33,15 @@
 }
 
 .layoutFooter {
-  margin-top: 35rem;
-  /* position: absolute; */
+  /* margin-top: 35rem; */
+  font-family: sans-serif;
+  text-align: center;
+  font-size: large;
+  position: absolute;
   right: 0;
   bottom: 0;
   width: 100%;
-  padding: 1rem;
+  padding: 10px 20px;
 
   background-color: rgb(205, 179, 179);
   border-bottom: 1px solid rgb(156, 88, 88);

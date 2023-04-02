@@ -35,8 +35,6 @@ export default async function handler(
 
       await client.close();
 
-      console.log(values);
-
       res.status(200).json(values);
       return;
 

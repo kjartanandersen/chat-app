@@ -54,7 +54,7 @@ const LoginPageForm = () => {
       });
 
       if (result && !result.error) {
-        router.replace("/chat");
+        router.replace("/rooms");
       }
     } else {
       // sign up user

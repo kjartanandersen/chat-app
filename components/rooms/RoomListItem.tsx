@@ -1,3 +1,4 @@
+import Link from "next/link";
 import styles from "./RoomListItem.module.css";
 
 interface IRoomListItemProps {
@@ -5,7 +6,16 @@ interface IRoomListItemProps {
 }
 
 const RoomListItem = ({ name }: IRoomListItemProps) => {
-  return <div className={styles.roomListItem}>{name}</div>;
+  const linkPath = `/rooms/${name}`;
+
+  return (
+    <div className={styles.roomListItem}>
+      <h2>{name}</h2>
+      <Link href={linkPath}>
+        <button className={styles.roomListItemBtn}>{"->"}</button>
+      </Link>
+    </div>
+  );
 };
 
 export default RoomListItem;

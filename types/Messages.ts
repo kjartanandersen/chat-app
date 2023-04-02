@@ -1,6 +1,7 @@
 export interface IMessage {
   username: string;
   message: string;
+  roomName: string;
 }
 
 

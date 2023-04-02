@@ -25,6 +25,7 @@ async function insertMsgToDb(msg: IMessage) {
   const result = await db.collection<IMessage>("messages").insertOne({
     username: msg.username,
     message: msg.message,
+    roomName: msg.roomName,
   });
 
   if (result.acknowledged) {
@@ -32,6 +33,7 @@ async function insertMsgToDb(msg: IMessage) {
 
     return result;
   } else {
+    client.close();
     throw new Error("Could not insert message");
   }
 }
