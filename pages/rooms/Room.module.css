@@ -1,15 +1,18 @@
 .roomHeader {
   /* height: 50px; */
   display: flex;
-  flex-direction: row;
   padding-bottom: 2rem;
+  justify-content: center;
   gap: 70%;
   width: 100%;
 }
 
+
+
+
 .roomHeader > button {
   height: 50px;
-  width: 200px;
+  width: 20%;
   font-family: inherit;
   font-size: larger;
   background-color: blue;

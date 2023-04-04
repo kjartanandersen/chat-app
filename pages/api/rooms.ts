@@ -1,13 +1,27 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { connectToDatabase } from "@/lib/db";
-import { ICreateRoomForm } from "@/types/Room";
-import { MongoClient } from "mongodb";
+import { InsertOneResult, MongoClient, FindCursor, WithId } from "mongodb";
 
 import { authOptions } from "./auth/[...nextauth]";
 import { getServerSession } from "next-auth";
 
+import { connectToDatabase } from "@/lib/db";
+import { ICreateRoomForm, IRoomsWithId } from "@/types/Room";
 interface ExtendsNextApiRequest extends NextApiRequest {
   body: ICreateRoomForm;
+}
+
+async function convertCursorToArray(
+  cursor: WithId<ICreateRoomForm>[]
+) {
+  let rooms: IRoomsWithId[];
+  cursor.forEach((item) => {
+    rooms.push({
+      _id: item._id.toString(),
+      name: item.name,
+      createdBy: item.createdBy,
+    });
+  });
+  return rooms;
 }
 
 export default async function handler(
@@ -31,13 +45,13 @@ export default async function handler(
 
       const result = db.collection<ICreateRoomForm>("rooms").find({});
 
+
       const values = await result.toArray();
 
-      await client.close();
+
 
       res.status(200).json(values);
       return;
-
     } catch (error) {
       res.status(500).json({
         message: {
@@ -71,9 +85,9 @@ export default async function handler(
       client.close();
       return;
     }
-
+    let result: InsertOneResult<Document>;
     try {
-      const result = await db.collection("rooms").insertOne({
+      result = await db.collection("rooms").insertOne({
         name: name,
         createdBy: createdBy,
       });
@@ -88,6 +102,7 @@ export default async function handler(
       return;
     }
     client.close();
+
     res.status(201).json({ message: "Successfullly created room" });
   }
 

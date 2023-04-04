@@ -9,12 +9,11 @@ const RoomListItem = ({ name }: IRoomListItemProps) => {
   const linkPath = `/rooms/${name}`;
 
   return (
-    <div className={styles.roomListItem}>
-      <h2>{name}</h2>
-      <Link href={linkPath}>
-        <button className={styles.roomListItemBtn}>{"->"}</button>
-      </Link>
-    </div>
+    <Link href={linkPath}>
+      <div className={styles.roomListItem}>
+        <h2>{name}</h2>
+      </div>
+    </Link>
   );
 };
 

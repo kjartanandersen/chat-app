@@ -1,14 +1,16 @@
 import { ICreateRoomForm } from "@/types/Room";
 import { Session } from "next-auth";
-import { FormEvent, FormEventHandler, useRef } from "react";
+import { FormEvent, useRef } from "react";
+import { WithId } from "mongodb";
 
 import styles from "./CreateRoomForm.module.css";
 
 interface IProps {
   session: Session;
+  createRoomHandler: (room: ICreateRoomForm) => void;
 }
 
-const CreateRoomForm = ({ session }: IProps) => {
+const CreateRoomForm = ({ session, createRoomHandler }: IProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const sendRoomData = async (roomData: ICreateRoomForm) => {
@@ -34,10 +36,8 @@ const CreateRoomForm = ({ session }: IProps) => {
       name: inputRef.current.value,
     };
 
-
-
     sendRoomData(roomData);
-
+    createRoomHandler(roomData);
   };
 
   return (

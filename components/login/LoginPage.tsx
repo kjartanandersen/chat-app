@@ -19,10 +19,6 @@ const LoginPage = () => {
     });
   }, [router]);
 
-  // if (session) {
-  //   router.replace("/chat");
-  // }
-
   if (isLoading) {
     return <p>Loading...</p>;
   }
@@ -33,25 +29,5 @@ const LoginPage = () => {
     </Fragment>
   );
 };
-
-// export const getServerSideProps: GetServerSideProps<{
-//   session: Session | null;
-// }> = async (context) => {
-//   const session = await getSession(context);
-
-//   if (session) {
-//     return {
-//       redirect: {
-//         destination: "/chat",
-//         permanent: false,
-//       },
-//     };
-//   }
-//   return {
-//     props: {
-//       session,
-//     },
-//   };
-// };
 
 export default LoginPage;

@@ -1,7 +1,7 @@
 import Layout from "@/components/layout/Layout";
 import CreateRoomForm from "@/components/rooms/CreateRoomForm";
 import RoomListItem from "@/components/rooms/RoomListItem";
-import { ICreateRoomForm } from "@/types/Room";
+import { ICreateRoomForm, IRoomsWithId } from "@/types/Room";
 import { WithId } from "mongodb";
 import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
@@ -14,13 +14,18 @@ import styles from "./Room.module.css";
 const Rooms = () => {
   const [createRoomEnabled, setCreateRoomEnabled] = useState<boolean>(false);
   const { data: session, status } = useSession();
-  const [rooms, setRooms] = useState<WithId<ICreateRoomForm>[]>([]);
+
+  const [rooms, setRooms] = useState<IRoomsWithId[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     getAllRooms().then((data) => {
-      setRooms(data);
+      if (isLoading) {
+        setRooms(data);
+        setIsLoading(false);
+      }
     });
-  }, []);
+  }, [isLoading]);
 
   const createRoomBtnHandler = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -29,7 +34,7 @@ const Rooms = () => {
   };
 
   const getAllRooms = async () => {
-    let data: WithId<ICreateRoomForm>[];
+    let data: IRoomsWithId[];
 
     try {
       const response = await fetch("/api/rooms");
@@ -37,20 +42,30 @@ const Rooms = () => {
     } catch (error) {
       throw new Error(error);
     }
-
     return data;
+  };
+
+  const addRoomHandler = (room: IRoomsWithId) => {
+    setRooms([...rooms, room]);
   };
 
   return (
     <Layout>
-      {createRoomEnabled && <CreateRoomForm session={session} />}
+      {createRoomEnabled && (
+        <CreateRoomForm session={session} createRoomHandler={addRoomHandler} />
+      )}
       <div className={styles.roomHeader}>
         <h1>Rooms</h1>
         <button onClick={createRoomBtnHandler}>+ Create Room</button>
       </div>
-      <div className={styles.roomList}>
-        {rooms.map((room) => <RoomListItem name={room.name} key={room._id.toString()} />)}
-      </div>
+      {isLoading && <h2>Loading...</h2>}
+      {!isLoading && (
+        <div className={styles.roomList}>
+          {rooms.map((room) => (
+            <RoomListItem name={room.name} key={room._id} />
+          ))}
+        </div>
+      )}
     </Layout>
   );
 };

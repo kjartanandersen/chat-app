@@ -1,7 +1,7 @@
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 
-import { signIn, getSession, useSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
 
 import styles from "./LoginPageForm.module.css";
 
@@ -9,7 +9,9 @@ const LoginPageForm = () => {
   const usernameRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const [isLogin, setIsLogin] = useState<boolean>(true);
+
   const [error, setError] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   const router = useRouter();
 
@@ -55,6 +57,9 @@ const LoginPageForm = () => {
 
       if (result && !result.error) {
         router.replace("/rooms");
+      } else {
+        setError(true);
+        setErrorMessage("Error: Invalid username or password!");
       }
     } else {
       // sign up user
@@ -71,12 +76,15 @@ const LoginPageForm = () => {
 
   const switchLoginHandler = (e: React.MouseEvent<HTMLButtonElement>) => {
     setIsLogin((prevState) => !prevState);
+    setError(false);
+    usernameRef.current.value = "";
+    passwordRef.current.value = "";
   };
 
   return (
     <section className={styles.form}>
       <h1>{isLogin ? "Login" : "Sign Up"}</h1>
-      {error && <p>Error</p>}
+      {error && <p className={styles.errorParagraph}>{errorMessage}</p>}
       <form onSubmit={loginSubmitHandler} className={styles.formItems}>
         <div>
           <label htmlFor="username" className={styles.control}>

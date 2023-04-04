@@ -2,6 +2,7 @@ import React from "react";
 import { signOut, useSession } from "next-auth/react";
 
 import styles from "./Layout.module.css";
+import { useRouter } from "next/router";
 
 interface ILayoutProps {
   children: React.ReactNode;
@@ -10,9 +11,16 @@ interface ILayoutProps {
 const Layout = (props: ILayoutProps) => {
   const { data: session, status } = useSession();
 
+  const router = useRouter();
+
   const btnSignOutHandler = (e: React.MouseEvent) => {
     e.preventDefault();
     signOut({ callbackUrl: "/" });
+  };
+
+  const btnGoToRooms = (e: React.MouseEvent) => {
+    e.preventDefault();
+    router.replace("/rooms");
   };
 
   return (
@@ -21,9 +29,24 @@ const Layout = (props: ILayoutProps) => {
         <nav>
           <div className={styles.layout}>
             {session && (
-              <button className={styles.signBtn} onClick={btnSignOutHandler}>
-                Sign Out
-              </button>
+              <ul>
+                <li>
+                  <button
+                    className={styles.signBtn}
+                    onClick={btnSignOutHandler}
+                  >
+                    Sign Out
+                  </button>
+                </li>
+                <li>
+                  <button
+                    className={styles.signBtn}
+                    onClick={btnGoToRooms}
+                  >
+                    Rooms
+                  </button>
+                </li>
+              </ul>
             )}
           </div>
         </nav>

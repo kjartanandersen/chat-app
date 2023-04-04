@@ -9,6 +9,14 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
 }
 
+.errorParagraph {
+  background-color: red;
+  line-height: normal;
+  margin: 15px 0;
+  border-radius: 15px;
+  padding: 0;
+  text-shadow: none;
+}
 
 .formItems {
   color: white;
@@ -41,3 +49,4 @@
   background-color: rgb(147, 111, 159);
   border-color: rgb(147, 111, 159);
 }
+
