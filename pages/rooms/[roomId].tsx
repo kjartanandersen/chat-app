@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, MouseEvent, FormEvent } from "react";
+import { useState, useEffect, useRef, FormEvent } from "react";
 import io, { Socket } from "socket.io-client";
 import { GetServerSideProps } from "next";
 import { getSession, useSession } from "next-auth/react";
@@ -74,7 +74,6 @@ const ChatRoom = () => {
     } else {
       const { roomId } = router.query;
       if (typeof roomId !== "string") {
-        console.log(roomId);
         return;
       }
 
@@ -150,7 +149,6 @@ export const getServerSideProps: GetServerSideProps<{
       },
     };
   }
-  console.log(session.user.username);
 
   return {
     props: { session },

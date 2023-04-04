@@ -1,8 +1,7 @@
 import Layout from "@/components/layout/Layout";
 import CreateRoomForm from "@/components/rooms/CreateRoomForm";
 import RoomListItem from "@/components/rooms/RoomListItem";
-import { ICreateRoomForm, IRoomsWithId } from "@/types/Room";
-import { WithId } from "mongodb";
+import {  IRoomsWithId } from "@/types/Room";
 import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 import { useSession } from "next-auth/react";
@@ -47,6 +46,7 @@ const Rooms = () => {
 
   const addRoomHandler = (room: IRoomsWithId) => {
     setRooms([...rooms, room]);
+    setCreateRoomEnabled(false);
   };
 
   return (
