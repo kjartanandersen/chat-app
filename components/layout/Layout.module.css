@@ -5,6 +5,7 @@
 
 .page > main {
   padding-bottom: 6rem;
+  margin-left: 100px;
 }
 
 .layout {
@@ -16,6 +17,7 @@
   background-color: rgb(205, 179, 179);
   border-bottom: 1px solid rgb(156, 88, 88);
 }
+
 
 .layout > ul {
   margin: 0;
@@ -57,4 +59,11 @@
 
   background-color: rgb(205, 179, 179);
   border-bottom: 1px solid rgb(156, 88, 88);
+}
+
+@media (max-width: 768px) {
+  .page > main {
+    padding-bottom: 3rem;
+    margin-left: 60px;
+  }
 }

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, FormEvent } from "react";
+import { useState, useEffect, useRef, FormEvent, Fragment } from "react";
 import io, { Socket } from "socket.io-client";
 import { GetServerSideProps } from "next";
 import { getSession, useSession } from "next-auth/react";
@@ -13,6 +13,7 @@ import styles from "./ChatRoom.module.css";
 import Layout from "@/components/layout/Layout";
 import DialougeItem from "@/components/chat/DialougeItem";
 import DialogueForm from "@/components/chat/DialogueForm";
+import Head from "next/head";
 
 let socket: undefined | Socket;
 
@@ -33,6 +34,8 @@ const ChatRoom = () => {
   const { data: session, status } = useSession();
 
   const router = useRouter();
+
+  const { roomId } = router.query;
 
   useEffect(() => {
     socketInitializer();
@@ -72,7 +75,6 @@ const ChatRoom = () => {
     ) {
       setMsgIsValid(false);
     } else {
-      const { roomId } = router.query;
       if (typeof roomId !== "string") {
         return;
       }
@@ -103,36 +105,47 @@ const ChatRoom = () => {
   }
 
   return (
-    <Layout>
-      {!initMessages && <p>Loading...</p>}
-      {initMessages && (
-        <div className={styles.chat}>
-          <ul>
-            {initMessages.length > 0 &&
-              initMessages.map((msg) => (
-                <li
-                  className={styles.litem + " container"}
-                  key={msg._id.toString()}
-                >
-                  <DialougeItem message={msg.message} username={msg.username} />
-                </li>
-              ))}
+    <Fragment>
+      <Head>
+        <title>{roomId}</title>
+      </Head>
+      <Layout>
+        {!initMessages && <p>Loading...</p>}
+        {initMessages && (
+          <div className={styles.chat}>
+            <ul>
+              {initMessages.length > 0 &&
+                initMessages.map((msg) => (
+                  <li
+                    className={styles.litem + " container"}
+                    key={msg._id.toString()}
+                  >
+                    <DialougeItem
+                      message={msg.message}
+                      username={msg.username}
+                    />
+                  </li>
+                ))}
 
-            {messages.length > 0 &&
-              messages.map((msg) => (
-                <li className={styles.litem + " container"} key={msg.id}>
-                  <DialougeItem message={msg.message} username={msg.username} />
-                </li>
-              ))}
-          </ul>
+              {messages.length > 0 &&
+                messages.map((msg) => (
+                  <li className={styles.litem + " container"} key={msg.id}>
+                    <DialougeItem
+                      message={msg.message}
+                      username={msg.username}
+                    />
+                  </li>
+                ))}
+            </ul>
 
-          <DialogueForm
-            inputRef={inputRef}
-            sendMessageHandler={sendMessageHandler}
-          />
-        </div>
-      )}
-    </Layout>
+            <DialogueForm
+              inputRef={inputRef}
+              sendMessageHandler={sendMessageHandler}
+            />
+          </div>
+        )}
+      </Layout>
+    </Fragment>
   );
 };
 

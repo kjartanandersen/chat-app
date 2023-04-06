@@ -1,14 +1,15 @@
 import Layout from "@/components/layout/Layout";
 import CreateRoomForm from "@/components/rooms/CreateRoomForm";
 import RoomListItem from "@/components/rooms/RoomListItem";
-import {  IRoomsWithId } from "@/types/Room";
+import { IRoomsWithId } from "@/types/Room";
 import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { authOptions } from "../api/auth/[...nextauth]";
 
 import styles from "./Room.module.css";
+import Head from "next/head";
 
 const Rooms = () => {
   const [createRoomEnabled, setCreateRoomEnabled] = useState<boolean>(false);
@@ -50,23 +51,31 @@ const Rooms = () => {
   };
 
   return (
-    <Layout>
-      {createRoomEnabled && (
-        <CreateRoomForm session={session} createRoomHandler={addRoomHandler} />
-      )}
-      <div className={styles.roomHeader}>
-        <h1>Rooms</h1>
-        <button onClick={createRoomBtnHandler}>+ Create Room</button>
-      </div>
-      {isLoading && <h2>Loading...</h2>}
-      {!isLoading && (
-        <div className={styles.roomList}>
-          {rooms.map((room) => (
-            <RoomListItem name={room.name} key={room._id} />
-          ))}
+    <Fragment>
+      <Head>
+        <title>Rooms</title>
+      </Head>
+      <Layout>
+        {createRoomEnabled && (
+          <CreateRoomForm
+            session={session}
+            createRoomHandler={addRoomHandler}
+          />
+        )}
+        <div className={styles.roomHeader}>
+          <h1>Rooms</h1>
+          <button onClick={createRoomBtnHandler}>+ Create Room</button>
         </div>
-      )}
-    </Layout>
+        {isLoading && <h2>Loading...</h2>}
+        {!isLoading && (
+          <div className={styles.roomList}>
+            {rooms.map((room) => (
+              <RoomListItem name={room.name} key={room._id} />
+            ))}
+          </div>
+        )}
+      </Layout>
+    </Fragment>
   );
 };
 

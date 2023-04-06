@@ -50,3 +50,9 @@
   border-color: rgb(147, 111, 159);
 }
 
+@media (max-width: 767px) {
+  .form {
+    width: 60vw;
+    margin: 0;
+  }
+}
