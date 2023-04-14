@@ -4,6 +4,7 @@ import { FormEvent, useRef } from "react";
 import { WithId } from "mongodb";
 
 import styles from "./CreateRoomForm.module.css";
+import { createRoomSlug } from "@/utils/rooms";
 
 interface IProps {
   session: Session;
@@ -31,10 +32,14 @@ const CreateRoomForm = ({ session, createRoomHandler }: IProps) => {
 
   const roomFormOnSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const name: string = inputRef.current.value;
     const roomData: ICreateRoomForm = {
+      name: name,
+      nameSlug: createRoomSlug(name),
       createdBy: session.user.username,
-      name: inputRef.current.value,
     };
+
+    console.log(roomData);
 
     sendRoomData(roomData);
     createRoomHandler(roomData);

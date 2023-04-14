@@ -2,11 +2,13 @@ import { useState, useEffect, useRef, FormEvent, Fragment } from "react";
 import io, { Socket } from "socket.io-client";
 import { GetServerSideProps } from "next";
 import { getSession, useSession } from "next-auth/react";
-import { Session } from "next-auth";
+import { Session, getServerSession } from "next-auth";
 import { useRouter } from "next/router";
-import { WithId } from "mongodb";
+import { MongoClient, WithId } from "mongodb";
 
 import { IMessage } from "@/types/Messages";
+
+import { authOptions } from "../api/auth/[...nextauth]";
 
 import styles from "./ChatRoom.module.css";
 
@@ -14,6 +16,8 @@ import Layout from "@/components/layout/Layout";
 import DialougeItem from "@/components/chat/DialougeItem";
 import DialogueForm from "@/components/chat/DialogueForm";
 import Head from "next/head";
+import { connectToDatabase } from "@/lib/db";
+import { IRoomsWithId } from "@/types/Room";
 
 let socket: undefined | Socket;
 
@@ -23,7 +27,7 @@ interface INewMessage {
   message: string;
 }
 
-const ChatRoom = () => {
+const ChatRoom = ({ session }) => {
   const [initMessages, setInitMessages] = useState<WithId<IMessage>[]>(null);
   const [msgHasInit, setMsgHasInit] = useState<boolean>(false);
   const [messages, setMessages] = useState<INewMessage[]>([]);
@@ -31,7 +35,7 @@ const ChatRoom = () => {
 
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const { data: session, status } = useSession();
+  // const { data: session, status } = useSession();
 
   const router = useRouter();
 
@@ -152,7 +156,32 @@ const ChatRoom = () => {
 export const getServerSideProps: GetServerSideProps<{
   session: Session | null;
 }> = async (context) => {
-  const session = await getSession(context);
+  const { req, res } = context;
+
+  const { roomId } = context.query;
+
+  let client: MongoClient;
+
+  // Check if room exists
+  try {
+    client = await connectToDatabase("chat-app");
+
+    const db = client.db();
+
+    const room = await db.collection<IRoomsWithId>("rooms").findOne<IRoomsWithId>({nameSlug: roomId});
+
+    if (room === null) {
+      return {
+        notFound: true,
+      }
+    }
+
+  } catch (error) {
+    console.log(error);
+
+  }
+
+  const session = await getServerSession(req, res, authOptions);
 
   if (!session) {
     return {

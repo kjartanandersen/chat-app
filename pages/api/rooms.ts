@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { InsertOneResult, MongoClient, FindCursor, WithId } from "mongodb";
+import { InsertOneResult, MongoClient } from "mongodb";
 
 import { authOptions } from "./auth/[...nextauth]";
 import { getServerSession } from "next-auth";
@@ -8,20 +8,6 @@ import { connectToDatabase } from "@/lib/db";
 import { ICreateRoomForm, IRoomsWithId } from "@/types/Room";
 interface ExtendsNextApiRequest extends NextApiRequest {
   body: ICreateRoomForm;
-}
-
-async function convertCursorToArray(
-  cursor: WithId<ICreateRoomForm>[]
-) {
-  let rooms: IRoomsWithId[];
-  cursor.forEach((item) => {
-    rooms.push({
-      _id: item._id.toString(),
-      name: item.name,
-      createdBy: item.createdBy,
-    });
-  });
-  return rooms;
 }
 
 export default async function handler(
@@ -76,7 +62,7 @@ export default async function handler(
       return;
     }
     const db = client.db();
-    const { name, createdBy } = req.body;
+    const { name, createdBy, nameSlug } = req.body;
 
     if (!name || name.length < 5 || !createdBy) {
       res
@@ -85,10 +71,11 @@ export default async function handler(
       client.close();
       return;
     }
-    let result: InsertOneResult<Document>;
+    let result: InsertOneResult<ICreateRoomForm>;
     try {
-      result = await db.collection("rooms").insertOne({
+      result = await db.collection<ICreateRoomForm>("rooms").insertOne({
         name: name,
+        nameSlug: nameSlug,
         createdBy: createdBy,
       });
     } catch (error) {

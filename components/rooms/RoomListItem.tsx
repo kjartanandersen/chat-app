@@ -3,10 +3,11 @@ import styles from "./RoomListItem.module.css";
 
 interface IRoomListItemProps {
   name: string;
+  slugName: string;
 }
 
-const RoomListItem = ({ name }: IRoomListItemProps) => {
-  const linkPath = `/rooms/${name}`;
+const RoomListItem = ({ name, slugName }: IRoomListItemProps) => {
+  const linkPath = `/rooms/${slugName}`;
 
   return (
     <Link href={linkPath} className={styles.roomListItem}>

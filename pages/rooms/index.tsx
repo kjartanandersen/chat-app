@@ -70,7 +70,7 @@ const Rooms = () => {
         {!isLoading && (
           <div className={styles.roomList}>
             {rooms.map((room) => (
-              <RoomListItem name={room.name} key={room._id} />
+              <RoomListItem name={room.name} slugName={room.nameSlug} key={room._id} />
             ))}
           </div>
         )}
